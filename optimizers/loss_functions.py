@@ -8,25 +8,40 @@ class LossFunction:
     def __init__(self):
         pass
     
-    def evaluate(self, x: float, y: float) -> float:
+    def evaluate(self, params: np.ndarray) -> float:
         """Returns loss value for a point."""
         pass
     
-    def grad(self, x: float, y: float, h: float = 1e-5) -> np.ndarray:
+    #def grad(self, x: float, y: float, h: float = 1e-5) -> np.ndarray:
+        #df_dx = (self.evaluate(x + h, y) - self.evaluate(x - h, y)) / (2 * h)
+        #df_dy = (self.evaluate(x, y + h) - self.evaluate(x, y - h)) / (2 * h)
+        #return np.array([df_dx, df_dy])
+    def grad(self, params: np.ndarray, h: float = 1e-5) -> np.ndarray:
         """
         Returns gradient vector for a point. using Central Difference for approximation.
         """
-        df_dx = (self.evaluate(x + h, y) - self.evaluate(x - h, y)) / (2 * h)
-        df_dy = (self.evaluate(x, y + h) - self.evaluate(x, y - h)) / (2 * h)
-        return np.array([df_dx, df_dy])
+        grad = np.zeros_like(params)
+        for i in range(len(params)):
+            p_plus = params.copy()
+            p_minus = params.copy()
+            
+            p_plus[i] += h
+            p_minus[i] -= h
+            
+            grad[i] = (self.evaluate(p_plus) - self.evaluate(p_minus)) / (2 * h)
+        return grad
 
 class Rosenbrock(LossFunction):
-    def __init__(self, a: float = 1.0, b: float = 100.0):
+    def __init__(self, a: float = 1.0, b: float = 100.0, baby_mode: str = True):
         super().__init__()
-        self.a = a
-        self.b = b
+        if baby_mode:
+            self.a = a
+            self.b = b
+        else:
+            self.a = np.full((1,20), a)
+            self.b = np.full((1, 20), b)
         
-    def evaluate(self, x, y):
-        """Returns the value of expression ((a - x)**2 + b * (y - x**2)**2)"""
+    def evaluate(self, params):
+        x, y = params[0], params[1]
         return (self.a - x)**2 + (self.b * (y - x**2)**2) 
 

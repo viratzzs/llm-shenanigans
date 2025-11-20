@@ -2,17 +2,17 @@ from manim import *
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-from simulate import SimulationVisualizer
+from simulate import Simulator
 from bgd import BatchGradientDescent
 from loss_functions import Rosenbrock
 
 class Optimizer2D(Scene):
     def construct(self):
-        # Generate a fresh trajectory with random starting point
-        init_pos = np.random.rand(2) * 4 - 2  # Random point in [-2, 2] range
-        print(f"Starting position: {init_pos}")
+        #params = np.random.rand(2) * 4 - 2
+        params = np.random.rand(2, 20) * 4 - 2
+        print(f"Initial weights: {params}")
         
-        sim = SimulationVisualizer(BatchGradientDescent(), Rosenbrock(), init_pos, 10000)
+        sim = Simulator(BatchGradientDescent(), Rosenbrock(baby_mode=False), params, 5000)
         sim.run()
         data = sim.trajectory
         
@@ -45,10 +45,10 @@ class Optimizer2D(Scene):
         for level_segments in cs.allsegs:
             for segment in level_segments:
                 if len(segment) > 1:
-                    # Convert to manim coordinates
+                    # Convert to manim coords
                     manim_points = [axes.c2p(v[0], v[1]) for v in segment]
                     contour_line = VMobject()
-                    contour_line.set_points_smoothly(manim_points)  
+                    contour_line.set_points_smoothly(manim_points)
                     contour_line.set_stroke(BLUE, width=1.5, opacity=0.5)
                     contours.add(contour_line)
         
@@ -60,7 +60,18 @@ class Optimizer2D(Scene):
         
         self.add(axes, contours, min_point, min_label, origin, origin_label)
         
-        path_points = [axes.c2p(d[0], d[1]) for d in data]
+        # Calculate mean position(centroid) of tensor at each step
+        # d[0] is array of shape (2, N)
+        # We want (mean_x, mean_y)
+        path_points = []
+        for d in data:
+            params = np.array(d[0])
+            if params.ndim > 1:
+                mean_x = np.mean(params[0])
+                mean_y = np.mean(params[1])
+                path_points.append(axes.c2p(mean_x, mean_y))
+            else:
+                path_points.append(axes.c2p(params[0], params[1]))
         
         path = VMobject(color=BLUE, stroke_width=3)
         path.set_points_as_corners(path_points)
