@@ -9,6 +9,8 @@ from optimizers.bgd import *
 from optimizers.sgd import *
 from optimizers.momentum import Momentum
 from optimizers.adam import Adam
+from optimizers.adamax import AdaMax
+from optimizers.nadam import Nadam
 from optimizers.base_optimizer import BaseOptimizer
 from optimizers.loss_functions import LossFunction, Rosenbrock
 
@@ -28,7 +30,7 @@ class Simulator:
         for _ in range(self.steps):
         #    grad = self.loss_fn.grad(*self.params)  # unpack array into positional args
             grad = self.loss_fn.grad(self.params)
-            if isinstance(self.optimizer, Adam):
+            if isinstance(self.optimizer, Adam) or isinstance(self.optimizer, AdaMax) or isinstance(self.optimizer, AdaMax):
                 self.params = self.optimizer.step(self.params, grad, cur_step=_ + 1)
             else:
                 self.params = self.optimizer.step(self.params, grad) # update params w/ selected optimizer

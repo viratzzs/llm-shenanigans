@@ -6,5 +6,5 @@ class StochasticGradientDescent(BaseOptimizer):
         super().__init__(lr)
     
     def step(self, params, grad):
-        noise = np.random.normal(0, 0.25) # adding high noise to kinda simulate sgd? don't like this at all tbh but ig my main focus is visualization here
+        noise = np.random.normal(0, 0.25, size=grad.shape) # adding high noise to kinda simulate sgd? don't like this at all tbh but ig my main focus is visualization here
         return (params - self.lr * (grad + noise))

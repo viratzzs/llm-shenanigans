@@ -13,9 +13,9 @@ class Adam(BaseOptimizer):
         self.velocity = (self.beta2 * self.velocity) + (1 - self.beta2) * grad ** 2
         
         # correcting bias in first and second moments
-        mom1 = self.momentum / (1 - self.beta1 ** cur_step)
-        mom2 = self.velocity / (1 - self.beta2 ** cur_step)
+        m1 = self.momentum / (1 - self.beta1 ** cur_step)
+        m2 = self.velocity / (1 - self.beta2 ** cur_step)
         
-        new_params = params - (self.lr * mom1 / (mom2 ** 0.5 + 1e-8))
+        new_params = params - (self.lr * m1 / (m2 ** 0.5 + 1e-8))
         
         return new_params

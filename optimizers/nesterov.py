@@ -7,5 +7,8 @@ class Nesterov(BaseOptimizer):
         self.velocity = 0
         
     def step(self, params, grad):
-        # TODO: implement lookahead grad calculation
+        # DONE: implement lookahead grad calculation by ilya's formulation
+        self.velocity = self.beta * self.velocity + grad # adding raw gradients w/o lr
+        new_params = params - self.lr * (grad + self.beta * self.velocity) # now applying lr to current grad AND updated velocity
         
+        return new_params

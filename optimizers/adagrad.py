@@ -7,6 +7,6 @@ class Adagrad(BaseOptimizer):
         self.cache = 0
         
     def step(self, params, grad):
-        self.cache += grad
+        self.cache += grad**2
         new_params = params - (self.lr / np.sqrt(self.cache + 1e-8)) * grad # or, well, add epsilon but idrc
         return new_params
